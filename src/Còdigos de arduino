@@ -1,1 +1,195 @@
+#include <Servo.h>
+#include <NewPing.h>
+
+#define IN1 8
+#define IN2 7
+#define ENA 5
+
+#define trig_der 12
+#define echo_der 13
+#define trig_izq 3
+#define echo_izq 2
+#define trig_fren A3
+#define echo_fren A2
+#define trig_tra 9
+#define echo_tra 10
+
+#define MAX_DISTANCIA 280 // Distancia máxima para los sensores ultrasónicos
+
+NewPing sonar_fren(trig_fren, echo_fren, MAX_DISTANCIA);
+NewPing sonar_der(trig_der, echo_der, MAX_DISTANCIA);
+NewPing sonar_izq(trig_izq, echo_izq, MAX_DISTANCIA);
+NewPing sonar_tra(trig_tra, echo_tra, MAX_DISTANCIA);
+
+double ade;
+double esp_der_izq;
+double der;
+double ang_centro = 90;
+double angulo_izq;
+double medidas_x;
+double izq;
+double angulo_der;
+double medidas_y;
+double detras;
+double var_ang;
+double pista;
+double tiempo_cder;
+double tiempo_cizq;
+double dist_cder;
+double dist_cizq;
+double l_der_r;
+double l_izq_r;
+double vel;
+int velocidad = 180;
+Servo servo_A0;
+int vueltas = 0;
+int segmentos = 0;
+
+double Medida(NewPing &sonar) {
+    delay(50); // Pequeño retraso entre mediciones
+    unsigned int uS = sonar.ping(); // Lee la distancia en microsegundos
+    if (uS == 0) return 999.0; // Si no hay eco, devuelve 999
+    return uS / US_ROUNDTRIP_CM; // Convierte a centímetros
+}
+
+void sensores() {
+    ade = Medida(sonar_fren);
+    der = Medida(sonar_der);
+    izq = Medida(sonar_izq);
+    detras = Medida(sonar_tra);
+}
+
+void datos() {
+    esp_der_izq = 20;
+    medidas_x = 7;
+    medidas_y = 20;
+    pista = 100;
+    ang_centro = 90;
+    vel = 0.220;
+}
+
+double calcularAngulo(double ade, double medida_lateral, double pista, double medidas_x, double var_ang, bool esIzquierda) {
+    double angulo_base = atan((ade - 20) / (pista - (medida_lateral + medidas_x))) * (180 / 3.141592);
+    if (esIzquierda) {
+        return angulo_base + var_ang;
+    } else {
+        return 180 - angulo_base - var_ang;
+    }
+}
+
+void calculo() {
+    datos();
+    l_der_r = (izq + medidas_x);
+    l_izq_r = (der + medidas_x);
+    angulo_izq = calcularAngulo(ade, der, pista, medidas_x, var_ang, true);
+    angulo_der = calcularAngulo(ade, izq, pista, medidas_x, var_ang, false);
+    dist_cder = sqrt((100 * 100) + (l_der_r * l_der_r));
+    dist_cizq = sqrt((100 * 100) + (l_izq_r * l_izq_r));
+    tiempo_cder = dist_cder / vel;
+    tiempo_cizq = dist_cizq / vel;
+}
+
+void avanzar() {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    analogWrite(ENA, velocidad);
+    servo_A0.write(ang_centro);
+}
+
+void mostrar_dat() {
+    Serial.print("ade  ");
+    Serial.print(ade);
+    Serial.print(" der  ");
+    Serial.print(der);
+    Serial.print(" izq   ");
+    Serial.print(izq);
+    Serial.print(" detras ");
+    Serial.println(detras);
+}
+
+void curva_der() {
+    servo_A0.write(angulo_der);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    analogWrite(ENA, velocidad);
+}
+
+void curva_izq() {
+    servo_A0.write(angulo_izq);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    analogWrite(ENA, velocidad);
+}
+
+void acomodo() {
+    servo_A0.write(60);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    analogWrite(ENA, 0);
+}
+
+void setup() {
+    pinMode(IN2, OUTPUT);
+    pinMode(IN1, OUTPUT);
+    pinMode(ENA, OUTPUT);
+
+    servo_A0.attach(A0);
+
+    Serial.begin(9600);
+    Serial.flush();
+    while (Serial.available() > 0) Serial.read();
+    sensores();
+    delay(5500);
+
+    ang_centro = 90;
+}
+
+void loop() {
+    mostrar_dat();
+    sensores();
+    avanzar();
+
+    if (vueltas >= 12) {
+        // Detenerse después de 12 vueltas
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, LOW);
+        analogWrite(ENA, 0);
+        return;
+    }
+
+    if (ade < 90 && der > 100 && izq > 100) {
+        sensores();
+        calculo();
+        mostrar_dat();
+        curva_der();
+        delay(tiempo_cder * 1000); // Convierte segundos a milisegundos
+        acomodo();
+        delay(tiempo_cder * 1000);
+        avanzar();
+        delay(tiempo_cder * 1000);
+        segmentos++;
+        if (segmentos >= 4) {
+            vueltas++;
+            segmentos = 0;
+        }
+    }
+
+    if (ade < 90 && der > 100 && izq > 100) {
+        sensores();
+        calculo();
+        mostrar_dat();
+        curva_izq();
+        delay(tiempo_cizq * 1000); // Convierte segundos a milisegundos
+        acomodo();
+        delay(tiempo_cizq * 1000);
+        avanzar();
+        delay(tiempo_cizq * 1000);
+        segmentos++;
+        if (segmentos >= 4) {
+            vueltas++;
+            segmentos = 0;
+        }
+    }
+}
+
 
