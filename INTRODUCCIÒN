@@ -1,0 +1,22 @@
+
+RESUMEN EN ESPAÑOL
+
+Para confeccionar un vehículo autónomo utilizando un carro Osoyoo y una placa Arduino Uno, el proceso se basa en el desarrollo de una tecnología que optimiza la eficiencia y seguridad en el transporte. Este vehículo utiliza sensores de ultrasonido SR HC-04, los cuales capturan señales del entorno. Estas señales son procesadas por la tarjeta Arduino Uno, que, mediante la programación en la plataforma IDE de Arduino, determina las acciones a realizar en función de las señales recibidas por cada sensor.
+
+El vehículo está equipado con cuatro sensores de ultrasonido colocados al frente, en los lados, y en la parte frontal. Su programación incluye funciones como la de avanzar, que permite que el vehículo se desplace siempre que no haya obstáculos enfrente. Cuando el vehículo detecta un obstáculo a menos de 90 cm, realiza un giro hacia el lado con mayor distancia libre, utilizando los sensores laterales para tomar esta decisión. Si la lectura del sensor izquierdo es mayor que la del derecho, el vehículo girará a la izquierda; de lo contrario, girará a la derecha.
+
+Además, el sistema tiene una función que calcula el ángulo de giro necesario utilizando funciones trigonométricas, lo que ayuda al vehículo a mantenerse alejado de las paredes laterales, evitando colisiones. También se han definido variables para registrar el número de vueltas que el vehículo ha dado, permitiéndole detenerse automáticamente después de completar tres vueltas.
+
+Este resumen captura la esencia del funcionamiento y programación del carro Osoyoo, proporcionando una visión general del proceso de creación de un vehículo autónomo utilizando Arduino.
+
+
+RESUMEN EN INGLÈS
+
+To build an autonomous vehicle using an Osoyoo car and an Arduino Uno board, the process is based on developing technology that optimizes efficiency and safety in transportation. This vehicle uses SR HC-04 ultrasonic sensors, which capture signals from the environment. These signals are processed by the Arduino Uno board, which, through programming in the Arduino IDE platform, determines the actions to be taken based on the signals received by each sensor.
+
+The vehicle is equipped with four ultrasonic sensors placed at the front, sides, and on the front part. Its programming includes functions such as advancing, which allows the vehicle to move forward as long as there are no obstacles ahead. When the vehicle detects an obstacle within 90 cm, it will turn towards the side with the most free space, using the side sensors to make this decision. If the left sensor's reading is greater than the right one, the vehicle will turn left; otherwise, it will turn right.
+
+Additionally, the system has a function that calculates the required turning angle using trigonometric functions, which helps the vehicle stay away from the side walls, avoiding collisions. Variables are also defined to track the number of laps the vehicle has made, allowing it to stop automatically after completing three laps.
+
+This summary captures the essence of the functionality and programming of the Osoyoo car, providing an overview of the process of creating an autonomous vehicle using Arduino.
+
