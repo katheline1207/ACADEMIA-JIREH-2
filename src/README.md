@@ -1,12 +1,13 @@
-Control de Software:
+Software Control:
 
 This directory must contain code for control software which is used by the vehicle to participate in the competition and which was developed by the participants.
 
 All artifacts required to resolve dependencies and build the project must be included in this directory as well.
 
-Control de Hardware:
+Hardware Control:
 
-Aquì podemos encontrar todos los materiales que se utilizaròn para la construcciòn del Carrp Osoyo.
+Here we can find all the materials that will be used for the construction of Carrp Osoyo.
+
 
 
 Control de software:
